@@ -1,50 +1,78 @@
 package com.cyruscvc.docscanner;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.provider.MediaStore;
-import com.google.mlkit.vision.document.DocumentRecognizer;
-import com.google.mlkit.vision.document.DocumentScannerOptions;
-import com.google.mlkit.vision.common.InputImage;
-import org.apache.cordova.CordovaPlugin;
+import android.content.IntentSender;
+import android.util.Log;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.core.content.FileProvider;
+import com.google.android.gms.mlkit.document.GmsDocumentScannerOptions;
+import com.google.android.gms.mlkit.document.GmsDocumentScanning;
+import com.google.android.gms.mlkit.document.GmsDocumentScanningResult;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 
 public class MLKitDocScanner extends CordovaPlugin {
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private CallbackContext callbackContext;
 
     @Override
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        if (action.equals("scanDocument")) {
-            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            cordova.setActivityResultCallback(this);
-            cordova.getActivity().startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+        this.callbackContext = callbackContext;
+
+        if ("scanDocument".equals(action)) {
+            scanDocument();
             return true;
         }
         return false;
     }
 
+    private void scanDocument() {
+        try {
+            GmsDocumentScannerOptions options = new GmsDocumentScannerOptions.Builder()
+                    .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_BASE)
+                    .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_PDF, GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+                    .setGalleryImportAllowed(false)
+                    .setPageLimit(3)
+                    .build();
+
+            GmsDocumentScanning.getClient(cordova.getContext(), options)
+                    .getStartScanIntent(cordova.getContext())
+                    .addOnSuccessListener(intentSender -> {
+                        cordova.setActivityResultCallback(this);
+                        cordova.getActivity().startIntentSenderForResult(intentSender, 1001, null, 0, 0, 0);
+                    })
+                    .addOnFailureListener(e -> {
+                        callbackContext.error(e.getMessage());
+                    });
+
+        } catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-
-            // Use Google ML Kit's Document Scanner API here
-            InputImage image = InputImage.fromBitmap(photo, 0);
-            DocumentScannerOptions options = new DocumentScannerOptions.Builder()
-                .setDetectorMode(DocumentScannerOptions.STREAM_MODE)
-                .build();
-
-            DocumentScanner scanner = DocumentScanner.getClient(options);
-            scanner.process(image)
-                .addOnSuccessListener(result -> {
-                    callbackContext.success("Document scanned successfully.");
-                })
-                .addOnFailureListener(e -> {
-                    callbackContext.error("Document scan failed.");
-                });
+        if (requestCode == 1001) {
+            try {
+                GmsDocumentScanningResult result = GmsDocumentScanningResult.fromActivityResultIntent(data);
+                if (resultCode == cordova.getActivity().RESULT_OK && result != null) {
+                    JSONObject resultData = new JSONObject();
+                    if (result.getPdf() != null) {
+                        String pdfPath = result.getPdf().getUri().getPath();
+                        File externalFile = new File(pdfPath);
+                        String externalUri = FileProvider.getUriForFile(cordova.getContext(), cordova.getActivity().getPackageName() + ".provider", externalFile).toString();
+                        resultData.put("pdfUri", externalUri);
+                    }
+                    callbackContext.success(resultData);
+                }
+            } catch (Exception e) {
+                callbackContext.error(e.getMessage());
+            }
         }
     }
 }
