@@ -1,15 +1,14 @@
 package com.cyruscvc.docscanner;
 
-import android.graphics.Bitmap;
+import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.document.DocumentScanner;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import com.google.mlkit.vision.document.DocumentRecognizer;
 import com.google.mlkit.vision.document.DocumentScannerOptions;
-import com.google.mlkit.vision.document.DocumentScannerResult;
-import org.apache.cordova.*;
+import com.google.mlkit.vision.common.InputImage;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
 import org.json.JSONException;
 
