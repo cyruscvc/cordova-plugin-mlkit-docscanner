@@ -1,15 +1,17 @@
 package com.cyruscvc.docscanner;
 
+import android.graphics.Bitmap;
+import android.content.Intent;
+import android.util.Log;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.document.DocumentScanner;
+import com.google.mlkit.vision.document.DocumentScannerOptions;
+import com.google.mlkit.vision.document.DocumentScannerResult;
 import org.apache.cordova.*;
 import org.json.JSONArray;
 import org.json.JSONException;
-import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
-import com.google.mlkit.vision.document.DocumentScanner;
-import com.google.mlkit.vision.document.DocumentScannerOptions;
-import com.google.mlkit.vision.common.InputImage;
-import android.graphics.Bitmap;
 
 public class MLKitDocScanner extends CordovaPlugin {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
