@@ -33,7 +33,7 @@
             <files-path name="external_files" path="." />
         </config-file>
         
-        <dependency src="com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1" />
+        <dependency id="com.google.android.gms:play-services-mlkit-document-scanner" version="16.0.0-beta1" />
 
         <source-file src="src/android/MLKitDocScanner.java" target-dir="src/com/cyruscvc/docscanner" />
     </platform>
