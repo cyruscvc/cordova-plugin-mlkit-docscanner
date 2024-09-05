@@ -1,5 +1,7 @@
-var exec = require('cordova/exec');
-
-exports.scanDocument = function(success, error) {
-    exec(success, error, "MLKitDocScanner", "scanDocument", []);
+var MLKitDocScanner = {
+    scanDocument: function(successCallback, errorCallback) {
+        cordova.exec(successCallback, errorCallback, 'MLKitDocScanner', 'scanDocument', []);
+    }
 };
+
+module.exports = MLKitDocScanner;
