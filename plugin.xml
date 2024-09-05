@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.cyruscvc.docscanner"
+        version="1.0.0">
+
+    <name>MLKitDocScanner</name>
+
+    <js-module src="www/MLKitDocScanner.js" name="MLKitDocScanner">
+        <clobbers target="MLKitDocScanner" />
+    </js-module>
+
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.CAMERA" />
+        </config-file>
+        <source-file src="src/android/MLKitDocScanner.java" target-dir="src/com/cyruscvc/docscanner" />
+    </platform>
+</plugin>
