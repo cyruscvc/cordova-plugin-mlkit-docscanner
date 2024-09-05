@@ -13,9 +13,9 @@
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.CAMERA" />
         </config-file>
-        <feature name="MLKit">
-      <param name="android-package" value="com.google.firebase.ml.vision.document" />
-    </feature>
+        <feature name="MLKitDocumentScanner">
+            <param name="android-package" value="com.google.android.gms.vision.document.DocumentScanner" />
+        </feature>
         <source-file src="src/android/MLKitDocScanner.java" target-dir="src/com/cyruscvc/docscanner" />
     </platform>
 </plugin>
